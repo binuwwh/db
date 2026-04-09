@@ -15,7 +15,6 @@ conn = psycopg2.connect(
 
 cur = conn.cursor()
 
-# ============ 1. client ============
 for _ in range(30):
     cur.execute("""
         INSERT INTO client (passport_number, email, organization_name, address, fio)
@@ -27,9 +26,7 @@ for _ in range(30):
         fake.city(),
         fake.name()
     ))
-conn.commit()  # ← СОХРАНЯЕМ клиентов
-
-# ============ 2. room ============
+conn.commit() 
 for _ in range(10):
     cur.execute("""
         INSERT INTO room (type, address, area, name)
@@ -40,9 +37,7 @@ for _ in range(10):
         random.randint(50, 300),
         fake.word()
     ))
-conn.commit()  # ← СОХРАНЯЕМ помещения
-
-# ============ 3. employee ============
+conn.commit() 
 for _ in range(15):
     hire_date = fake.date_between(start_date='-5y', end_date='-1m')
     
@@ -72,9 +67,7 @@ for _ in range(15):
         hire_date,
         dismissal_date
     ))
-conn.commit()  # ← СОХРАНЯЕМ сотрудников (ВАЖНО!)
-
-# ============ 4. position ============
+conn.commit() 
 positions = ["Manager", "Coordinator", "Technician", "Security", "Organizer"]
 
 for p in positions:
@@ -82,9 +75,7 @@ for p in positions:
         INSERT INTO position (position_name)
         VALUES (%s)
     """, (p,))
-conn.commit()  # ← СОХРАНЯЕМ должности
-
-# ============ 5. history_position ============
+conn.commit()  
 cur.execute("SELECT id_employee, hire_date, dismissal_date FROM employee")
 employees = cur.fetchall()
 
@@ -104,9 +95,7 @@ for employee_id, hire_date, dismissal_date in employees:
         VALUES (%s, %s, %s, %s)
         ON CONFLICT DO NOTHING
     """, (employee_id, position_id, start_date, end_date))
-conn.commit()  # ← СОХРАНЯЕМ историю
-
-# ============ 6. service_price ============
+conn.commit() 
 service_data = {
     "Photography": "Professional event photography with high-resolution images",
     "Video": "Full video recording and editing of the event",
@@ -151,9 +140,7 @@ while len(used) < 20:
         service_data[service],
         random.randint(30000, 150000)
     ))
-conn.commit()  # ← СОХРАНЯЕМ услуги
-
-# ============ 7. celebrity ============
+conn.commit() 
 for _ in range(10):
     cur.execute("""
         INSERT INTO celebrity (stage_name, fee, contacts, performance_profile)
@@ -164,9 +151,7 @@ for _ in range(10):
         fake.phone_number(),
         random.choice(['DJ', 'Singer', 'Host'])
     ))
-conn.commit()  # ← СОХРАНЯЕМ знаменитостей (ВАЖНО!)
-
-# ============ 8. contract ============
+conn.commit() 
 cur.execute("SELECT id_client FROM client")
 client_ids = [x[0] for x in cur.fetchall()]
 
@@ -189,9 +174,7 @@ for client_id in client_ids:
         conclusion_date,
         termination_date
     ))
-conn.commit()  # ← СОХРАНЯЕМ договоры
-
-# ============ 9. event ============
+conn.commit() 
 cur.execute("SELECT id_contract FROM contract")
 contract_ids = [x[0] for x in cur.fetchall()]
 
@@ -207,9 +190,7 @@ for i in range(30):
         fake.text(max_nb_chars=50),
         fake.date_between(start_date='today', end_date='+1y')
     ))
-conn.commit()  # ← СОХРАНЯЕМ мероприятия
-
-# ============ 10. selected_services ============
+conn.commit() 
 cur.execute("SELECT id_event FROM event")
 event_ids = [x[0] for x in cur.fetchall()]
 
@@ -228,7 +209,6 @@ for _ in range(80):
     ))
 conn.commit()
 
-# ============ 11. payment_document ============
 for contract_id in contract_ids:
     num_payments = random.randint(1, 3)
     for j in range(num_payments):
@@ -243,7 +223,6 @@ for contract_id in contract_ids:
         ))
 conn.commit()
 
-# ============ 12. performance ============
 cur.execute("SELECT id_celebrity FROM celebrity")
 celebrity_ids = [x[0] for x in cur.fetchall()]
 
